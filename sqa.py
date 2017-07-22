@@ -13,5 +13,3 @@ for i in range(550):
 		if dE<0 or exp(-dE/kT)>random.rand():
 			q[x] = -q[x]
 	kT = kT*0.99
-
-print(q)
