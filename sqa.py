@@ -10,8 +10,6 @@ q = []
 for jj in range(m):
 	q.append(random.choice([-1,1],N))
 
-print(q)
-
 for i in range(550):
 	for j in range(N*m):
 		x = random.randint(N)
@@ -21,4 +19,5 @@ for i in range(550):
 		if dE<0 or exp(-dE/kT)>random.rand():
 			q[y][x] = -q[y][x]
 	G = G*0.99
+
 print(q)
