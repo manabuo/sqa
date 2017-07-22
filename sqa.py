@@ -15,7 +15,7 @@ for i in range(550):
 		x = random.randint(N)
 		y = random.randint(m)
 		dE = (jij*2*q[y][x]*(q[y][(N+x-1)%N]+q[y][(x+1)%N]))/m
-		dE = q[y][x]*(q[(m+y-1)%m][x]+q[(y+1)%m][x])*log(1/tanh(G/kT/m))/kT
+		dE += q[y][x]*(q[(m+y-1)%m][x]+q[(y+1)%m][x])*log(1/tanh(G/kT/m))/kT
 		if dE<0 or exp(-dE/kT)>random.rand():
 			q[y][x] = -q[y][x]
 	G = G*0.99
