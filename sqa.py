@@ -10,7 +10,7 @@ q = []
 for jj in range(m):
 	q.append(random.choice([-1,1],N))
 
-for i in range(550):
+while G > 0.02:
 	for j in range(N*m):
 		x = random.randint(N)
 		y = random.randint(m)
