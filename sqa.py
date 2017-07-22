@@ -7,7 +7,7 @@ m = 10
 jij = 1
 q = []
 
-for jj in range(m):
+for i in range(m):
 	q.append(random.choice([-1,1],N))
 
 while G > 0.02:
