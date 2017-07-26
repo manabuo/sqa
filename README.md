@@ -1,5 +1,6 @@
 # Simulated Quantum Annealing Codes
-Here is now preparing python Simulated Quantum Annealing scripts.
+This is a python script of basic simulated quantum annealing on ising model.
 
-Now javascript version is coming first please check below first.
+
+Javscript version can acquire from link below
 <a href="https://github.com/mdrft/sqa_js" target="_blank">https://github.com/mdrft/sqa_js</a>
