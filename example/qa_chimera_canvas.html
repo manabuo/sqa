@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+<style>body{font-size:10px;}</style>
+</head>
+<body>
+G=<span id="GG"></span><br><br>
+<canvas id="main" width="2000" height="900"></canvas>
+<script>
+ var N = 512;
+ var kT = 0.02;
+ var G = 10;
+ var q = [];
+ var m = 256;
+ var jij = 1;
+ var hcell = 8;
+ var hq = hcell*8;
+ var drawtrotter = 10;
+ var alpha = 1/drawtrotter;
+
+ for(var j=0;j<m;j++){
+  q[j] = [];
+  for(var i=0;i<N;i++){
+   q[j][i] = Math.floor(Math.random()-0.5)*2+1;
+  };
+ };
+
+ var canvas = document.getElementById('main');
+ var ctx = canvas.getContext('2d');
+
+ var anneal = setInterval(function(){
+  for(var k=0;k<N*m;k++){
+   var x = Math.floor(Math.random()*N);
+   var y = Math.floor(Math.random()*m);
+   var xcell = Math.floor(x/8)*8;
+   if(x%8<4){
+    var dE = jij*2*q[y][x]*(q[y][xcell+4]+q[y][xcell+5]+q[y][xcell+6]+q[y][xcell+7]);
+    if(x<N-hq){
+     dE += jij*2*q[y][x]*(q[y][x+hq]);
+    }
+    if(x>hq-1){
+     dE += jij*2*q[y][x]*(q[y][x-hq]);
+    }
+   }else{
+    var dE = jij*2*q[y][x]*(q[y][xcell+0]+q[y][xcell+1]+q[y][xcell+2]+q[y][xcell+3]);
+    if(x%hq>7){
+     dE += jij*2*q[y][x]*q[y][x-8];
+    }
+    if(x%hq<hq-8){
+     dE += jij*2*q[y][x]*q[y][x+8];
+    }
+   }
+
+   dE = dE/m;
+   var kk = G/kT/m;
+   var kk1 = Math.exp(kk);
+   var kk2 = Math.exp(-kk);
+   dE += q[y][x]*(q[(m+y-1)%m][x]+q[(y+1)%m][x])*Math.log((kk1+kk2)/(kk1-kk2))/kT;
+   if(dE<0 || Math.exp(-dE/kT)>Math.random()){
+    q[y][x] = -q[y][x];
+   };
+  };
+
+  ctx.clearRect(0,0,2000,900);
+  for(var j=0;j<10;j++){
+   for(var i=0;i<N;i++){
+    if(q[j][i]==1){
+     ctx.fillStyle = 'rgba(255,0,0,'+alpha+')';
+    }else{
+     ctx.fillStyle = 'rgba(0,0,0,0)';
+    }
+    if(i%8<4){
+     ctx.fillRect(3+i%8*7+Math.floor(i%hq/8)*40,Math.floor(i/hq)*40,3,30);
+    }else{
+     ctx.fillRect(Math.floor(i%hq/8)*40,i%8*7-25+Math.floor(i/hq)*40,30,3);
+    }
+   };
+  };
+
+  G = G*0.999;
+  document.getElementById('GG').innerHTML = G;
+  if(G<0.05){
+   clearInterval(anneal);
+  }
+ },1);
+</script>
+</body>
+</html>
+

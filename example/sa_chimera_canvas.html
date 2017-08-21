@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<style>body{font-size:10px;}</style>
+</head>
+<body>
+kT=<span id="TT"></span><br>
+<canvas id="main" width="2000" height="2000"></canvas>
+
+<script>
+ var N = 2048;
+ var kT = 5;
+ var q = [];
+ var jij = -1;
+ var hcell = 16;
+ var hq = hcell*8;
+
+ for(var i=0;i<N;i++){
+  q[i] = Math.floor(Math.random()-0.5)*2+1;
+ };
+
+ var canvas = document.getElementById('main');
+ var ctx = canvas.getContext('2d');
+
+ var anneal = setInterval(function(){
+
+  for(var k=0;k<N;k++){
+   var x = Math.floor(Math.random()*N);
+   var xcell = Math.floor(x/8)*8;
+   if(x%8<4){
+    var dE = jij*2*q[x]*(q[xcell+4]+q[xcell+5]+q[xcell+6]+q[xcell+7]);
+    if(x<N-hq){
+     dE += jij*2*q[x]*(q[x+hq]);
+    }
+    if(x>hq-1){
+     dE += jij*2*q[x]*(q[x-hq]);
+    }
+   }else{
+    var dE = jij*2*q[x]*(q[xcell+0]+q[xcell+1]+q[xcell+2]+q[xcell+3]);
+    if(x%hq>7){
+     dE += jij*2*q[x]*q[x-8];
+    }
+    if(x%hq<hq-8){
+     dE += jij*2*q[x]*q[x+8];
+    }
+   }
+   if(dE<0 || Math.exp(-dE/kT)>Math.random()){
+    q[x] = -q[x];
+   };
+  }
+
+  ctx.clearRect(0,0,2000,900);
+  for(var i=0;i<N;i++){
+   if(q[i]==1){
+    ctx.fillStyle = 'rgb(255,0,0)';
+   }else{
+    ctx.fillStyle = 'rgba(255,255,255,0)';
+   }
+   if(i%8<4){
+    ctx.fillRect(3+i%8*7+Math.floor(i%hq/8)*40,Math.floor(i/hq)*40,3,30);
+   }else{
+    ctx.fillRect(Math.floor(i%hq/8)*40,i%8*7-25+Math.floor(i/hq)*40,30,3);
+   }
+  };
+  kT= kT*0.999;
+
+  document.getElementById('TT').innerHTML = kT;
+  if(kT<0.02){
+   clearInterval(anneal);
+  }
+ },1);
+</script>
+</body>
+</html>

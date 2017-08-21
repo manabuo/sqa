@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+ <style>body{font-size:10px;}</style>
+</head>
+<body>
+kT=0.02<br>
+G=<span id="GG"></span><br><br>
+<canvas id="main" width="2000" height="900"></canvas>
+<script>
+
+ //parameters
+ var N = 150;
+ var kT = 0.02;
+ var G = 10;
+ var q = [];
+ var m = 50 ;
+ var jij = 1;
+ var loop = 50000;
+
+ //qbit initialize
+ for(var j=0;j<m;j++){
+  q[j] = [];
+  for(var i=0;i<N;i++){
+   q[j][i] = Math.floor(Math.random()-0.5)*2+1;
+  };
+ };
+
+ //html5 canvas
+ var canvas = document.getElementById('main');
+ var ctx = canvas.getContext('2d');
+
+ var anneal = setInterval(function(){
+
+  //monte carlo loop start
+  for(var k=0;k<loop;k++){
+   var y = Math.floor(Math.random()*m); //select random trotter
+   var x = Math.floor(Math.random()*N); //select random qbit
+   var dE = (jij*2*q[y][x]*q[y][(N+x-1)%N] + jij*2*q[y][x]*q[y][(x+1)%N])/m; //Energy difference calc
+   var kk = G/kT/m;
+   var kk1 = Math.exp(kk);
+   var kk2 = Math.exp(-kk);
+   dE += q[y][x]*(q[(m+y-1)%m][x]+q[(y+1)%m][x])*Math.log((kk1+kk2)/(kk1-kk2))/kT; //Quantum flactuation calc
+   if(dE<0 || Math.exp(-dE/kT)>Math.random()){ // Metropolis
+    q[y][x] = -q[y][x]; //flipping qbit
+   };
+  };
+
+  //updating drawing
+  ctx.clearRect(0,0,2000,900);
+  ctx.beginPath();
+  for(var j=0;j<m;j++){
+   for(var i=0;i<N;i++){
+    if(q[j][i]==1){
+     ctx.fillStyle = 'rgb(255,0,0)';
+    }else{
+     ctx.fillStyle = 'rgb(255,255,255)';
+    }
+    ctx.fillRect(i*7,j*8,5,5);
+   };
+  };
+
+  G = G*0.999;
+  if(G<0.1){ //finishing
+   clearInterval(anneal);
+  };
+  document.getElementById('GG').innerHTML = G;
+
+ },1);
+</script>
+</body>
+</html>
